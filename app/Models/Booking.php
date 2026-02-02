@@ -15,6 +15,11 @@ class Booking extends Model
         'status',
     ];
 
+    protected $casts = [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+    ];
+
     // จองโดย User คนไหน
     public function user(): BelongsTo
     {
