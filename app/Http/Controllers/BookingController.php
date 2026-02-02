@@ -53,6 +53,7 @@ class BookingController extends Controller
 
         // เช็คว่าห้องว่างไหมในช่วงเวลาที่เลือก
         $isConflict = Booking::where('room_id', $request->room_id)
+            ->whereIn('status', ['pending', 'approved'])
             ->where(function ($query) use ($request) {
                 $query->where(function ($q) use ($request) {
                     $q->where('start_time', '<', $request->end_time)
@@ -63,7 +64,6 @@ class BookingController extends Controller
         if ($isConflict) {
             return back()->withErrors(['msg' => 'ไม่สามารถจองได้ เนื่องจากช่วงเวลานี้มีคนจองห้องนี้ไปแล้ว']);
         }
-
         // บันทึกข้อมูล
         Booking::create([
             'user_id' => Auth::id(),
@@ -75,4 +75,12 @@ class BookingController extends Controller
 
         return redirect()->route('dashboard')->with('success', 'จองห้องสำเร็จเรียบร้อยแล้ว!');
     }
+    public function cancel($id)
+    {
+        $booking = Booking::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+        $booking->delete();
+
+        return back()->with('success', 'ยกเลิกการจองเรียบร้อยแล้ว');
+    }
+
 }
