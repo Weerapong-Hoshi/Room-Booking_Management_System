@@ -10,14 +10,14 @@ use Carbon\Carbon;
 
 class BookingController extends Controller
 {
-    // หน้าปฏิทินรวม
+    // 1. หน้าปฏิทินรวม (แสดง FullCalendar)
     public function index()
     {
         $rooms = Room::all();
         return view('bookings.index', compact('rooms'));
     }
 
-    // ดึงข้อมูลการจองส่งออกเป็น JSON ให้ปฏิทิน (Google Calendar Style)
+    // 2. ส่งข้อมูลการจองเป็น JSON ให้ปฏิทิน
     public function getEvents(Request $request)
     {
         $bookings = Booking::with(['user', 'room'])->get();
@@ -28,18 +28,21 @@ class BookingController extends Controller
                 'title' => $booking->room->name . ' - ' . $booking->user->name,
                 'start' => $booking->start_time,
                 'end' => $booking->end_time,
-                'color' => $booking->status == 'approved' ? '#10b981' : '#f59e0b', // เขียว=อนุมัติ, ส้ม=รอ
-                'extendedProps' => [
-                    'room' => $booking->room->name,
-                    'user' => $booking->user->name,
-                    'status' => $booking->status
-                ]
+                'color' => '#10b981', // สีเขียว
             ];
         });
 
         return response()->json($events);
     }
 
+    // 3. ฟังก์ชันที่ขาดไป: หน้าฟอร์มกรอกข้อมูลการจอง
+    public function create($room_id)
+    {
+        $room = Room::findOrFail($room_id);
+        return view('bookings.create', compact('room'));
+    }
+
+    // 4. บันทึกข้อมูลการจอง (พร้อม Logic เช็คเวลาซ้ำ)
     public function store(Request $request)
     {
         $request->validate([
@@ -48,7 +51,7 @@ class BookingController extends Controller
             'end_time' => 'required|date|after:start_time',
         ]);
 
-        // Logic เช็คการจองซ้ำที่แม่นยำ (Overlapping Period)
+        // เช็คว่าห้องว่างไหมในช่วงเวลาที่เลือก
         $isConflict = Booking::where('room_id', $request->room_id)
             ->where(function ($query) use ($request) {
                 $query->where(function ($q) use ($request) {
@@ -58,9 +61,10 @@ class BookingController extends Controller
             })->exists();
 
         if ($isConflict) {
-            return back()->withErrors(['msg' => 'ช่วงเวลานี้มีการจองอยู่ก่อนแล้ว กรุณาเช็คจากปฏิทิน']);
+            return back()->withErrors(['msg' => 'ไม่สามารถจองได้ เนื่องจากช่วงเวลานี้มีคนจองห้องนี้ไปแล้ว']);
         }
 
+        // บันทึกข้อมูล
         Booking::create([
             'user_id' => Auth::id(),
             'room_id' => $request->room_id,
@@ -69,6 +73,6 @@ class BookingController extends Controller
             'status' => 'approved',
         ]);
 
-        return redirect()->route('bookings.index')->with('success', 'จองห้องสำเร็จแล้ว!');
+        return redirect()->route('dashboard')->with('success', 'จองห้องสำเร็จเรียบร้อยแล้ว!');
     }
 }
