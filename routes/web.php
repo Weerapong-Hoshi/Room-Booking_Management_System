@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,18 +40,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // 3. กลุ่ม Route สำหรับ Admin เท่านั้น
-Route::middleware(['auth'])->prefix('admin')->group(function () {
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     // จัดการการจอง
-    Route::post('/approve/{id}', [AdminController::class, 'approve'])->name('admin.approve');
-    Route::post('/reject/{id}', [AdminController::class, 'reject'])->name('admin.reject');
+    Route::post('/approve/{id}', [AdminController::class, 'approve'])->name('approve');
+    Route::post('/reject/{id}', [AdminController::class, 'reject'])->name('reject');
 
     // จัดการห้อง (Room CRUD)
-    Route::get('/rooms', [AdminController::class, 'rooms'])->name('admin.rooms.index'); // ตารางรวม
-    Route::get('/rooms/create', [AdminController::class, 'createRoom'])->name('admin.rooms.create'); // หน้าเพิ่ม
-    Route::post('/rooms', [AdminController::class, 'storeRoom'])->name('admin.rooms.store'); // บันทึก
-    Route::get('/rooms/{room}/edit', [AdminController::class, 'editRoom'])->name('admin.rooms.edit'); // หน้าแก้ไข
-    Route::patch('/rooms/{room}', [AdminController::class, 'updateRoom'])->name('admin.rooms.update'); // อัปเดต
-    Route::delete('/rooms/{room}', [AdminController::class, 'destroyRoom'])->name('admin.rooms.destroy'); // ลบ
+    Route::get('/rooms', [AdminController::class, 'rooms'])->name('rooms.index'); // ตารางรวม
+    Route::get('/rooms/create', [AdminController::class, 'createRoom'])->name('rooms.create'); // หน้าเพิ่ม
+    Route::post('/rooms', [AdminController::class, 'storeRoom'])->name('rooms.store'); // บันทึก
+    Route::get('/rooms/{room}/edit', [AdminController::class, 'editRoom'])->name('rooms.edit'); // หน้าแก้ไข
+    Route::patch('/rooms/{room}', [AdminController::class, 'updateRoom'])->name('rooms.update'); // อัปเดต
+    Route::delete('/rooms/{room}', [AdminController::class, 'destroyRoom'])->name('rooms.destroy'); // ลบ
+
+    // จัดการผู้ใช้ (User CRUD)
+    Route::resource('users', UserController::class);
 });
 
 require __DIR__ . '/auth.php';

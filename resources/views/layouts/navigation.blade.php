@@ -20,13 +20,16 @@
                         <x-nav-link :href="route('admin.rooms.index')" :active="request()->routeIs('admin.rooms.*')">
                             จัดการห้อง
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                            จัดการผู้ใช้
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
 
             <!-- Settings Dropdown -->
             <!-- Dark Mode Toggle Button -->
-            <div class="hidden sm:flex sm:items-center ms-auto me-2">
+            <div class="hidden sm:flex sm:items-center ms-auto gap-3">
                 <button id="theme-toggle" type="button"
                     class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
                     <!-- Sun Icon (แสดงตอนเป็น Dark Mode) -->
@@ -40,9 +43,22 @@
                         <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
                     </svg>
                 </button>
+
+                <!-- Profile Picture -->
+                <div class="flex items-center">
+                    @if (Auth::user()->profile_image)
+                        <img src="{{ asset('storage/' . Auth::user()->profile_image) }}" 
+                            alt="{{ Auth::user()->name }}" 
+                            class="w-10 h-10 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600">
+                    @else
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        </div>
+                    @endif
+                </div>
             </div>
 
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden sm:flex sm:items-center sm:ms-3">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button
@@ -105,6 +121,9 @@
             @if (Auth::user()->role === 'admin')
                 <x-responsive-nav-link :href="route('admin.rooms.index')" :active="request()->routeIs('admin.rooms.*')">
                     จัดการห้อง
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                    จัดการผู้ใช้
                 </x-responsive-nav-link>
             @endif
         </div>

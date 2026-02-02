@@ -26,7 +26,19 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $validated = $request->validated();
+
+        // Handle profile image upload
+        if ($request->hasFile('profile_image')) {
+            // Delete old image if exists
+            if ($request->user()->profile_image) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($request->user()->profile_image);
+            }
+            $path = $request->file('profile_image')->store('profile_images', 'public');
+            $validated['profile_image'] = $path;
+        }
+
+        $request->user()->fill($validated);
 
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
