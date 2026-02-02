@@ -70,7 +70,7 @@ class BookingController extends Controller
             'room_id' => $request->room_id,
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
-            'status' => 'approved',
+            'status' => 'pending',
         ]);
 
         return redirect()->route('dashboard')->with('success', 'จองห้องสำเร็จเรียบร้อยแล้ว!');

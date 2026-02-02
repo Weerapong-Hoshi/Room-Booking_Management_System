@@ -53,15 +53,18 @@
 
                                 @if ($room->is_busy)
                                     <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 shadow-sm">
-                                        <span class="w-2 h-2 mr-1.5 bg-red-500 rounded-full animate-pulse"></span>
-                                        ไม่ว่าง (มีการใช้งาน)
+                                        class="bg-red-100 text-red-800 px-2.5 py-0.5 rounded-full text-xs font-medium">
+                                        ● ไม่ว่าง (กำลังใช้งาน)
+                                    </span>
+                                @elseif($room->has_pending)
+                                    <span
+                                        class="bg-yellow-100 text-yellow-800 px-2.5 py-0.5 rounded-full text-xs font-medium animate-pulse">
+                                        ● รออนุมัติ
                                     </span>
                                 @else
                                     <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 shadow-sm">
-                                        <span class="w-2 h-2 mr-1.5 bg-green-500 rounded-full"></span>
-                                        ว่าง
+                                        class="bg-green-100 text-green-800 px-2.5 py-0.5 rounded-full text-xs font-medium">
+                                        ● ว่าง
                                     </span>
                                 @endif
                             </div>
