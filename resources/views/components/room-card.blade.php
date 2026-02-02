@@ -4,18 +4,28 @@
     class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col overflow-hidden group">
     <div class="p-6 flex-1">
 
-        <!-- 1. ชื่อห้องและ Badge สถานะ -->
-        <div class="flex justify-between items-start mb-5">
-            <h4
-                class="text-xl font-black text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors leading-tight">
+        <!-- 1. ชื่อห้อง, ปุ่มรายละเอียด และ Badge สถานะ -->
+        <div class="flex justify-between items-start mb-3">
+            <h4 class="text-xl font-black text-gray-900 dark:text-white leading-tight flex items-center">
                 {{ $room->name }}
+                <!-- ปุ่ม/ลิงก์ รายละเอียดห้อง -->
+                <a href="{{ route('rooms.show', $room->id) }}"
+                    class="inline-flex items-center text-sm font-bold text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 ml-3 transition-colors"
+                    title="ดูรายละเอียดห้องเพิ่มเติม">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="text-xs font-medium">รายละเอียด</span>
+                </a>
             </h4>
 
+            <!-- Badge สถานะ -->
             @if ($room->display_status === 'my_room')
                 <span
                     class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
                     <span class="w-1.5 h-1.5 mr-1.5 bg-blue-500 rounded-full"></span>
-                    {{ $room->booking_status === 'approved' ? 'ห้องของคุณ (อนุมัติแล้ว)' : 'ห้องของคุณ (รออนุมัติ)' }}
+                    {{ $room->booking_status === 'approved' ? 'ห้องของคุณ' : 'รออนุมัติ' }}
                 </span>
             @elseif($room->display_status === 'occupied')
                 <span
@@ -27,7 +37,7 @@
                 <span
                     class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-600">
                     <span class="w-1.5 h-1.5 mr-1.5 bg-gray-400 rounded-full animate-bounce"></span>
-                    มีคนจองแล้ว (รออนุมัติ)
+                    มีคนจองแล้ว
                 </span>
             @else
                 <span
@@ -38,7 +48,7 @@
             @endif
         </div>
 
-        <!-- 2. รายละเอียดการจอง (โชว์เมื่อไม่ว่าง) -->
+        <!-- 2. รายละเอียดการจอง/คำอธิบาย (โชว์เมื่อไม่ว่าง) -->
         @if ($room->display_status !== 'available')
             <div
                 class="mb-5 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-700 transition-all">
@@ -71,6 +81,7 @@
                 </div>
             </div>
         @else
+            <!-- ถ้าห้องว่าง แสดงรายละเอียดห้อง -->
             <div class="mb-5 min-h-[90px]">
                 <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed italic">
                     {{ $room->description ?? 'ห้องว่าง พร้อมสำหรับการเข้าใช้งาน สามารถกดจองได้ทันที' }}

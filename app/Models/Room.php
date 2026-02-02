@@ -12,6 +12,7 @@ class Room extends Model
         'capacity',
         'description',
         'status',
+        'image_url',
     ];
 
     // ห้องมีการจองหลายรายการ

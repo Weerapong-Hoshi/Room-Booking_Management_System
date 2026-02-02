@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->integer('capacity'); // ความจุ (คน)
             $table->text('description')->nullable(); // รายละเอียด (ว่างได้)
             $table->string('status')->default('available'); // สถานะห้อง (available, maintenance)
+            $table->string('image_url')->nullable(); // URL รูปภาพห้อง (ว่างได้)
             $table->timestamps();
         });
     }
