@@ -16,16 +16,13 @@ class DashboardController extends Controller
 
         // --- กรณีเป็น ADMIN ---
         if ($user->role === 'admin') {
-            // ดึงรายการที่รออนุมัติทั้งหมด
+            // ดึงรายการที่รออนุมัติทั้งหมด (สำหรับ Admin Dashboard - เฉพาะการอนุมัติการจอง)
             $pendingBookings = Booking::with(['user', 'room'])
                 ->where('status', 'pending')
                 ->latest()
                 ->get();
 
-            // ดึงรายการห้องทั้งหมด
-            $rooms = Room::all();
-
-            return view('admin.dashboard', compact('pendingBookings', 'rooms'));
+            return view('admin.dashboard', compact('pendingBookings'));
         }
 
         // --- กรณีเป็น USER (นักศึกษา/อาจารย์) ---
