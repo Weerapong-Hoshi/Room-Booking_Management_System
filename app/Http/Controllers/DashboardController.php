@@ -31,6 +31,12 @@ class DashboardController extends Controller
         // --- กรณีเป็น USER (นักศึกษา/อาจารย์) ---
         $rooms = Room::all()->map(function ($room) use ($user, $now) {
 
+            // ถ้าห้องกำหนดสถานะปิดซ่อมบำรุง ให้แสดงสถานะ maintenance ทันที (ไม่ให้จอง)
+            if ($room->status === 'maintenance') {
+                $room->display_status = 'maintenance';
+                return $room;
+            }
+
             // ค้นหาการจองที่มีผลอยู่ในปัจจุบัน หรือกำลังจะเกิดขึ้นเร็วๆ นี้ (ที่ได้รับการอนุมัติ หรือ รออนุมัติ)
             $activeBooking = $room->bookings()
                 ->whereIn('status', ['approved', 'pending'])

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use App\Models\Room;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -43,15 +45,23 @@ class AdminController extends Controller
     // 3. บันทึกข้อมูลห้องใหม่
     public function storeRoom(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255|unique:rooms,name',
             'capacity' => 'required|integer|min:1',
             'description' => 'nullable|string',
-            'image_url' => 'nullable|url', // สำหรับ URL รูปภาพ
+            'image' => 'nullable|image|max:2048', // อัปโหลดไฟล์รูปภาพ
+            'image_url' => 'nullable|url', // ยังคงรับ URL สำรองได้
             'status' => 'required|in:available,maintenance',
         ]);
 
-        Room::create($request->all());
+        $data = $validated;
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('rooms', 'public');
+            $data['image_url'] = $path; // เก็บ path ในคอลัมน์เดิม
+        }
+
+        Room::create($data);
         return redirect()->route('admin.rooms.index')->with('success', 'เพิ่มห้องใหม่สำเร็จ');
     }
 
@@ -64,21 +74,43 @@ class AdminController extends Controller
     // 5. อัปเดตข้อมูลห้อง
     public function updateRoom(Request $request, Room $room)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255|unique:rooms,name,' . $room->id,
             'capacity' => 'required|integer|min:1',
             'description' => 'nullable|string',
+            'image' => 'nullable|image|max:2048',
             'image_url' => 'nullable|url',
             'status' => 'required|in:available,maintenance',
         ]);
 
-        $room->update($request->all());
+        $data = $validated;
+
+        if ($request->hasFile('image')) {
+            // ลบไฟล์เก่าหากเป็นไฟล์ที่เก็บใน storage
+            if ($room->image_url && !Str::startsWith($room->image_url, ['http://', 'https://'])) {
+                if (Storage::disk('public')->exists($room->image_url)) {
+                    Storage::disk('public')->delete($room->image_url);
+                }
+            }
+
+            $path = $request->file('image')->store('rooms', 'public');
+            $data['image_url'] = $path;
+        }
+
+        $room->update($data);
         return redirect()->route('admin.rooms.index')->with('success', 'อัปเดตข้อมูลห้องสำเร็จ');
     }
 
     // 6. ลบห้อง
     public function destroyRoom(Room $room)
     {
+        // ลบไฟล์ภาพถ้ามี
+        if ($room->image_url && !Str::startsWith($room->image_url, ['http://', 'https://'])) {
+            if (Storage::disk('public')->exists($room->image_url)) {
+                Storage::disk('public')->delete($room->image_url);
+            }
+        }
+        
         $room->delete();
         return back()->with('success', 'ลบห้องสำเร็จ');
     }

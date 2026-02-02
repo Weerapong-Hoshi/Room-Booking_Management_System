@@ -10,7 +10,7 @@
             <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-8 border dark:border-gray-700">
 
                 <!-- ฟอร์มส่งข้อมูลไปยัง AdminController::updateRoom -->
-                <form method="POST" action="{{ route('admin.rooms.update', $room->id) }}" class="space-y-6">
+                <form method="POST" action="{{ route('admin.rooms.update', $room->id) }}" class="space-y-6" enctype="multipart/form-data">
                     @csrf
                     @method('PATCH') <!-- ต้องระบุ method เป็น PATCH สำหรับการอัปเดต -->
 
@@ -54,15 +54,18 @@
                         </select>
                     </div>
 
-                    <!-- URL รูปภาพ (Optional) -->
+                    <!-- รูปภาพห้อง (อัปโหลดไฟล์) -->
                     <div>
-                        <label for="image_url" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">URL
-                            รูปภาพห้อง (Optional)</label>
-                        <input id="image_url" name="image_url" type="url"
-                            class="w-full px-4 py-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('image_url') border-red-500 @enderror"
-                            value="{{ old('image_url', $room->image_url) }}"
-                            placeholder="http://example.com/room_pic.jpg">
-                        @error('image_url')
+                        <label for="image" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">รูปภาพห้อง (อัปโหลด)</label>
+                        @if($room->image_url)
+                            <div class="mb-2">
+                                <img src="{{ $room->image_url }}" alt="รูปห้อง {{ $room->name }}" class="w-48 h-auto rounded-lg border" />
+                            </div>
+                        @endif
+                        <input id="image" name="image" type="file" accept="image/*"
+                            class="w-full px-4 py-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @error('image') border-red-500 @enderror">
+                        <p class="text-xs text-gray-400 mt-1">อัปโหลดไฟล์ใหม่เพื่อเปลี่ยนรูปเดิม (ไม่เกิน 2MB)</p>
+                        @error('image')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>

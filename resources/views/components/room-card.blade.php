@@ -39,6 +39,12 @@
                     <span class="w-1.5 h-1.5 mr-1.5 bg-gray-400 rounded-full animate-bounce"></span>
                     มีคนจองแล้ว
                 </span>
+            @elseif($room->display_status === 'maintenance')
+                <span
+                    class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">
+                    <span class="w-1.5 h-1.5 mr-1.5 bg-yellow-500 rounded-full"></span>
+                    ปิดซ่อมบำรุง
+                </span>
             @else
                 <span
                     class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
@@ -113,6 +119,11 @@
                 class="w-full py-3.5 bg-red-50 text-red-600 border border-red-100 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-100 transition shadow-sm">
                 ยกเลิกการจองของคุณ
             </button>
+        @elseif($room->display_status === 'maintenance')
+            <div
+                class="w-full py-3.5 bg-yellow-50 text-yellow-800 rounded-2xl font-black text-xs uppercase tracking-widest text-center border border-yellow-100 cursor-not-allowed">
+                ปิดซ่อมบำรุง
+            </div>
         @else
             <div
                 class="w-full py-3.5 bg-gray-50 dark:bg-gray-900/80 text-gray-400 rounded-2xl font-black text-xs uppercase tracking-widest text-center border border-gray-100 dark:border-gray-700 cursor-not-allowed">
