@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Room;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
+use Mpdf\Mpdf;
 
 class AdminController extends Controller
 {
@@ -110,8 +111,65 @@ class AdminController extends Controller
                 Storage::disk('public')->delete($room->image_url);
             }
         }
-        
+
         $room->delete();
         return back()->with('success', 'ลบห้องสำเร็จ');
+    }
+
+    /**
+     * Display the admin analytics dashboard.
+     */
+    public function analytics()
+    {
+        $roomUsageData = Booking::select('room_id')
+            ->selectRaw('COUNT(*) as booking_count')
+            ->where('status', 'approved')
+            ->groupBy('room_id')
+            ->with('room')
+            ->get();
+
+        $bookingByDate = Booking::selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->where('status', 'approved')
+            ->where('created_at', '>=', now()->subDays(30))
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        // แปลงให้ JS อ่านได้
+        $roomLabels = $roomUsageData->map(fn($b) => $b->room->name ?? 'Unknown')->values();
+        $roomCounts = $roomUsageData->pluck('booking_count')->values();
+
+        return view('admin.analytics', compact(
+            'roomUsageData',
+            'bookingByDate',
+            'roomLabels',
+            'roomCounts'
+        ));
+    }
+
+    /**
+     * Generate PDF report for bookings.
+     */
+    public function generatePdfReport(Request $request)
+    {
+        $bookings = Booking::with(['room', 'user'])
+            ->where('status', 'approved')
+            ->orderBy('start_time', 'desc')
+            ->get();
+
+        $html = view('admin.pdf_report', compact('bookings'))->render();
+
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4-L',
+            'default_font' => 'garuda',  // ฟอนต์ไทย built-in ไม่ต้องลงเพิ่ม!
+        ]);
+
+        $mpdf->WriteHTML($html);
+
+        return response($mpdf->Output('report.pdf', 'S'), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="room_booking_report_' . now()->format('Y-m-d_H-i-s') . '.pdf"',
+        ]);
     }
 }

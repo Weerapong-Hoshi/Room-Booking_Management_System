@@ -23,6 +23,9 @@
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             จัดการผู้ใช้
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.analytics')" :active="request()->routeIs('admin.analytics')">
+                            สถิติการใช้งาน
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -124,6 +127,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                     จัดการผู้ใช้
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.analytics')" :active="request()->routeIs('admin.analytics')">
+                    สถิติการใช้งาน
                 </x-responsive-nav-link>
             @endif
         </div>

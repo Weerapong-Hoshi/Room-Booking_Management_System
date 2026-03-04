@@ -55,6 +55,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
     // จัดการผู้ใช้ (User CRUD)
     Route::resource('users', UserController::class);
+
+    // Analytics Dashboard และ PDF Report
+    Route::get('/analytics', [AdminController::class, 'analytics'])->name('analytics');
+    Route::get('/pdf/report', [AdminController::class, 'generatePdfReport'])->name('pdf.report');
 });
 
 require __DIR__ . '/auth.php';
