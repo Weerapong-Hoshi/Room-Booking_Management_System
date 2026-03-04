@@ -62,15 +62,28 @@
                     ข้อมูลการใช้งานปัจจุบัน:</p>
 
                 <div class="flex items-center mb-3">
-                    <div
-                        class="w-9 h-9 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center text-indigo-600 shadow-sm mr-3 text-xs font-black border border-gray-100 dark:border-gray-700">
-                        {{ substr($room->booked_by_name, 0, 1) }}
+                    <!-- รูปภาพผู้จอง -->
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg border-2 border-white dark:border-gray-800">
+                            @if($room->booked_by_profile_image)
+                                <img src="{{ asset('storage/' . $room->booked_by_profile_image) }}" alt="{{ $room->booked_by_name }}" class="w-12 h-12 rounded-full object-cover">
+                            @else
+                                {{ substr($room->booked_by_name, 0, 1) }}
+                            @endif
+                        </div>
                     </div>
-                    <div>
+                    
+                    <!-- ข้อมูลผู้จอง -->
+                    <div class="ml-3">
                         <p class="text-sm font-bold text-gray-800 dark:text-gray-200 leading-none mb-1">
                             {{ $room->booked_by_name }}
                         </p>
                         <p class="text-[10px] text-gray-400 font-medium">ID: {{ $room->booked_by_id }}</p>
+                        <div class="text-[10px] text-gray-500 mt-1">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+                                {{ $room->booking_status === 'approved' ? 'ยืนยันแล้ว' : 'รออนุมัติ' }}
+                            </span>
+                        </div>
                     </div>
                 </div>
 

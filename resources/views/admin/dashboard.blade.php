@@ -39,8 +39,29 @@
                                 @forelse($pendingBookings as $booking)
                                     <tr class="hover:bg-blue-50 dark:hover:bg-gray-700/50 transition-colors">
                                         <td class="px-6 py-4">
-                                            <div class="dark:text-white font-semibold">{{ $booking->user->name }}</div>
-                                            <div class="text-xs text-gray-600 dark:text-gray-400">{{ $booking->user->email }}</div>
+                                            <div class="flex items-center space-x-3">
+                                                <!-- รูปภาพผู้จอง -->
+                                                <div class="flex-shrink-0">
+                                                    <div class="w-12 h-12 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg border-2 border-white dark:border-gray-800">
+                                                        @if($booking->user->profile_image)
+                                                            <img src="{{ asset('storage/' . $booking->user->profile_image) }}" alt="{{ $booking->user->name }}" class="w-12 h-12 rounded-full object-cover">
+                                                        @else
+                                                            {{ substr($booking->user->name, 0, 1) }}
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- ข้อมูลผู้จอง -->
+                                                <div>
+                                                    <div class="dark:text-white font-semibold text-lg">{{ $booking->user->name }}</div>
+                                                    <div class="text-xs text-gray-600 dark:text-gray-400">{{ $booking->user->email }}</div>
+                                                    <div class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+                                                            {{ $booking->user->role === 'admin' ? 'ผู้ดูแลระบบ' : 'ผู้ใช้งานทั่วไป' }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="px-6 py-4 dark:text-white font-bold text-indigo-600 dark:text-indigo-400">{{ $booking->room->name }}</td>
                                         <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">

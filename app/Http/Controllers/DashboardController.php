@@ -46,6 +46,7 @@ class DashboardController extends Controller
                 $room->booking_id = $activeBooking->id;
                 $room->booked_by_name = $activeBooking->user->name;
                 $room->booked_by_id = $activeBooking->user->id;
+                $room->booked_by_profile_image = $activeBooking->user->profile_image;
                 $room->start_time = $activeBooking->start_time;
                 $room->end_time = $activeBooking->end_time;
                 $room->booking_status = $activeBooking->status;
